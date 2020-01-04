@@ -26,15 +26,13 @@ class Board():
 			return sum([self.get_neighbor(*c) for c in product([x - 1, x, x + 1],
 															[y - 1, y, y + 1])])
 
-	def get_neighbor(self, x_adj, y_adj):
-		if x_adj < 0 or y_adj < 0:
-			return 0
-		elif x_adj >= self.w or y_adj >= self.l:
-			return 0
-		else:
-			return (x_adj, y_adj) in self.mines
+	def good_neighbor(self, x, y):
+		return (x >= 0 and x < self.w) and (y >= 0 and y < self.l)
 
-	def update_square(self, pick_mine, x, y)
+	def get_neighbor(self, x_adj, y_adj):
+		return (x_adj, y_adj) in self.mines
+
+	def update_square(self, pick_mine, x, y):
 		if (x,y) in self.mines:
 			if pick_mine:
 				self.display[x][y] = True
@@ -51,14 +49,16 @@ class Board():
 	def update_adjacents(self, x, y):
 		'''recursively frees up display on adjacent squares when clear
 		cell is selected'''
-
 		if self.board[x][y] == 0:
 			self.display[x][y] = True
-			[update_adjacents(*c) for c in product([x - 1, x, x + 1],[y - 1, y, y + 1])]
-				# if self.board[cx][cy] 
-				# adj_result = self.update_adjacents(*c)
+			for cx, cy in product([x - 1, x, x + 1],[y - 1, y, y + 1]):
+				if self.good_neighbor(cx, cy):
+					if not self.display[cx][cy]:
+						self.display[cx][cy] = True
+						if self.board[cx][cy] == 0:
+							_ = self.update_adjacents(cx, cy)
 			return True
 
-		else self.board[x][y] > 0:
+		else:
 			self.display[x][y] = True
 			return False
