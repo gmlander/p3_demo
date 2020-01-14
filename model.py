@@ -57,7 +57,8 @@ def create_model(**kwargs):
     # -1 = mine
     # 0 = clear
     # 1-6 = number of mines
-    neighbors = layers.Input(shape=(NUM_POS_FEATS,), dtype = tf.int64, name = 'neighbors')
+    # semi - 1 hot encoded in form of (unknown, mine, number of mines) - (0/1, 0/1, 0-6)
+    neighbors = layers.Input(shape=(NUM_POS_FEATS, 3), dtype = tf.int64, name = 'neighbors')
 
     # game state features
     # total number of cells, total number of mines, number of known cells, number of known mines
@@ -98,7 +99,7 @@ def create_model(**kwargs):
 
 
     # prediction layer
-    pred = layers.Dense(1, activation='softsign', name = 'has_mine')(dense_merge_feats)
+    pred = layers.Dense(1, activation='sigmoid', name = 'has_mine')(dense_merge_feats)
 
     model = Model(inputs = [neighbors,
                             game_feats],
@@ -109,6 +110,6 @@ def create_model(**kwargs):
     else:
         opt = kwargs['optimizer']
     
-    model.compile(loss='hinge', optimizer= opt)
+    model.compile(loss='binary_crossentropy', optimizer= opt)
 
     return model
