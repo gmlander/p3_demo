@@ -40,7 +40,7 @@ class Board():
 			else:
 				return False
 		else:
-			if (x,y) in self.mines:
+			if pick_mine:
 				return False
 			else:
 				self.update_adjacents(x,y)
